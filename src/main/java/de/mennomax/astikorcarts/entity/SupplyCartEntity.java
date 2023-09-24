@@ -23,7 +23,6 @@ import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -31,11 +30,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.RecordItem;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -46,7 +41,6 @@ import net.minecraftforge.items.ItemStackHandler;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 
 public final class SupplyCartEntity extends AbstractDrawnInventoryEntity {
     private static final ImmutableList<EntityDataAccessor<ItemStack>> CARGO = ImmutableList.of(
@@ -140,7 +134,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity {
             final ItemStack stack = this.inventory.getStackInSlot(i);
             if (DiscTag.insert(stack, held)) {
                 this.inventory.setStackInSlot(i, stack);
-                ((ServerLevel) this.level()).getChunkSource().broadcastAndSend(this, new ClientboundSetEntityDataPacket(this.getId(), this.entityData.packDirty()));
+                this.getServer().overworld().getLevel().getChunkSource().broadcastAndSend(this, new ClientboundSetEntityDataPacket(this.getId(), this.entityData.packDirty()));
                 this.level().broadcastEntityEvent(this, (byte) 5);
                 if (!player.getAbilities().instabuild) held.shrink(1);
                 return true;

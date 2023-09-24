@@ -13,21 +13,16 @@ import de.mennomax.astikorcarts.network.serverbound.ActionKeyMessage;
 import de.mennomax.astikorcarts.network.serverbound.OpenSupplyCartMessage;
 import de.mennomax.astikorcarts.network.serverbound.ToggleSlowMessage;
 import de.mennomax.astikorcarts.server.ServerInitializer;
-import net.minecraft.client.resources.sounds.Sound;
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.stats.Stat;
-import net.minecraft.stats.StatFormatter;
-import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.common.util.ForgeSoundType;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -36,7 +31,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegisterEvent;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,12 +44,12 @@ public final class AstikorCarts {
     public static final Logger LOGGER = LoggerFactory.getLogger(AstikorCarts.class);
 
     public static final SimpleChannel CHANNEL = new NetBuilder(new ResourceLocation(ID, "main"))
-        .version(1).optionalServer().requiredClient()
-        .serverbound(ActionKeyMessage::new).consumer(() -> ActionKeyMessage::handle)
-        .serverbound(ToggleSlowMessage::new).consumer(() -> ToggleSlowMessage::handle)
-        .clientbound(UpdateDrawnMessage::new).consumer(() -> new UpdateDrawnMessage.Handler())
-        .serverbound(OpenSupplyCartMessage::new).consumer(() -> OpenSupplyCartMessage::handle)
-        .build();
+            .version(1).optionalServer().requiredClient()
+            .serverbound(ActionKeyMessage::new).consumer(() -> ActionKeyMessage::handle)
+            .serverbound(ToggleSlowMessage::new).consumer(() -> ToggleSlowMessage::handle)
+            .clientbound(UpdateDrawnMessage::new).consumer(() -> new UpdateDrawnMessage.Handler())
+            .serverbound(OpenSupplyCartMessage::new).consumer(() -> OpenSupplyCartMessage::handle)
+            .build();
 
     public static final class Items {
         private Items() {
@@ -66,13 +60,23 @@ public final class AstikorCarts {
         public static final RegistryObject<Item> WHEEL, SUPPLY_CART, PLOW, ANIMAL_CART;
 
         static {
-            WHEEL = R.register("wheel", () -> new Item(new Item.Properties().tab(CreativeModeTab.TAB_MATERIALS)));
-            final Supplier<Item> cart = () -> new CartItem(new Item.Properties().stacksTo(1).tab(CreativeModeTab.TAB_TRANSPORTATION));
+            WHEEL = R.register("wheel", () -> new Item(new Item.Properties()));
+            final Supplier<Item> cart = () -> new CartItem(new Item.Properties().stacksTo(1));
             SUPPLY_CART = R.register("supply_cart", cart);
             PLOW = R.register("plow", cart);
             ANIMAL_CART = R.register("animal_cart", cart);
         }
     }
+
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+            event.accept(Items.ANIMAL_CART);
+            event.accept(Items.SUPPLY_CART);
+            event.accept(Items.PLOW);
+            event.accept(Items.WHEEL);
+        }
+    }
+
 
     public static final class EntityTypes {
         private EntityTypes() {
@@ -87,19 +91,19 @@ public final class AstikorCarts {
 
         static {
             SUPPLY_CART = R.register("supply_cart", () -> EntityType.Builder.of(SupplyCartEntity::new, MobCategory.MISC)
-                .sized(1.5F, 1.4F)
-                .build(ID + ":supply_cart"));
+                    .sized(1.5F, 1.4F)
+                    .build(ID + ":supply_cart"));
             PLOW = R.register("plow", () -> EntityType.Builder.of(PlowEntity::new, MobCategory.MISC)
-                .sized(1.3F, 1.4F)
-                .build(ID + ":plow"));
+                    .sized(1.3F, 1.4F)
+                    .build(ID + ":plow"));
             ANIMAL_CART = R.register("animal_cart", () -> EntityType.Builder.of(AnimalCartEntity::new, MobCategory.MISC)
-                .sized(1.3F, 1.4F)
-                .build(ID + ":animal_cart"));
+                    .sized(1.3F, 1.4F)
+                    .build(ID + ":animal_cart"));
             POSTILION = R.register("postilion", () -> EntityType.Builder.of(PostilionEntity::new, MobCategory.MISC)
-                .sized(0.25F, 0.25F)
-                .noSummon()
-                .noSave()
-                .build(ID + ":postilion"));
+                    .sized(0.25F, 0.25F)
+                    .noSummon()
+                    .noSave()
+                    .build(ID + ":postilion"));
         }
     }
 
@@ -147,29 +151,36 @@ public final class AstikorCarts {
     }
 
     public AstikorCarts() {
-        final Initializer.Context ctx = new InitContext();
+        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        final Initializer.Context ctx = new ClientModEvents.InitContext();
         DistExecutor.runForDist(() -> ClientInitializer::new, () -> ServerInitializer::new).init(ctx);
 //      Stats.register(ctx.modBus());
         Items.R.register(ctx.modBus());
         EntityTypes.R.register(ctx.modBus());
         SoundEvents.SOUND_EVENTS.register(ctx.modBus());
         ContainerTypes.R.register(ctx.modBus());
+
+        eventBus.addListener(this::addCreative);
     }
 
-    private static class InitContext implements Initializer.Context {
-        @Override
-        public ModLoadingContext context() {
-            return ModLoadingContext.get();
-        }
+    public static class ClientModEvents {
 
-        @Override
-        public IEventBus bus() {
-            return MinecraftForge.EVENT_BUS;
-        }
+        private static class InitContext implements Initializer.Context {
+            @Override
+            public ModLoadingContext context() {
+                return ModLoadingContext.get();
+            }
 
-        @Override
-        public IEventBus modBus() {
-            return FMLJavaModLoadingContext.get().getModEventBus();
+            @Override
+            public IEventBus bus() {
+                return MinecraftForge.EVENT_BUS;
+            }
+
+            @Override
+            public IEventBus modBus() {
+                return FMLJavaModLoadingContext.get().getModEventBus();
+            }
         }
     }
 }
