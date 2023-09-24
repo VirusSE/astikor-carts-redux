@@ -26,7 +26,7 @@ public final class ActionKeyMessage implements Message {
     public static void handle(final ActionKeyMessage msg, final ServerMessageContext ctx) {
         final ServerPlayer player = ctx.getPlayer();
         final Entity pulling = MoreObjects.firstNonNull(player.getVehicle(), player);
-        final Level world = player.level;
+        final Level world = player.level();
         AstikorWorld.get(world).map(w -> w.getDrawn(pulling)).orElse(Optional.empty())
             .map(c -> Pair.of(c, (Entity) null))
             .or(() -> world.getEntitiesOfClass(AbstractDrawnEntity.class, pulling.getBoundingBox().inflate(2.0D), entity -> entity != pulling).stream()

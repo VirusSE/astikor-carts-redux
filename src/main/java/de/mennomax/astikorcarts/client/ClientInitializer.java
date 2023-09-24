@@ -3,7 +3,6 @@ package de.mennomax.astikorcarts.client;
 import de.mennomax.astikorcarts.AstikorCarts;
 import de.mennomax.astikorcarts.CommonInitializer;
 import de.mennomax.astikorcarts.client.gui.screen.inventory.PlowScreen;
-import de.mennomax.astikorcarts.client.oregon.OregonSubscriber;
 import de.mennomax.astikorcarts.client.renderer.AstikorCartsModelLayers;
 import de.mennomax.astikorcarts.client.renderer.entity.AnimalCartRenderer;
 import de.mennomax.astikorcarts.client.renderer.entity.PlowRenderer;
@@ -42,7 +41,6 @@ public final class ClientInitializer extends CommonInitializer {
     @Override
     public void init(final Context mod) {
         super.init(mod);
-        new OregonSubscriber().register(mod.bus());
         mod.bus().<TickEvent.ClientTickEvent>addListener(e -> {
             if (e.phase == TickEvent.Phase.END) {
                 final Minecraft mc = Minecraft.getInstance();

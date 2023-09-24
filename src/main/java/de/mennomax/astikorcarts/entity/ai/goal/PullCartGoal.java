@@ -16,6 +16,6 @@ public final class PullCartGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return AstikorWorld.get(this.mob.level).map(w -> w.isPulling(this.mob)).orElse(false);
+        return AstikorWorld.get(this.mob.level()).map(w -> w.isPulling(this.mob)).orElse(false);
     }
 }

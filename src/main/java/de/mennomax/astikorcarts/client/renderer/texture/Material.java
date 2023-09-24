@@ -47,6 +47,6 @@ public class Material {
 
     PreparedMaterial prepare(final ModelManager sprites) {
         final TextureAtlasSprite sprite = sprites.getAtlas(this.sprite.getFirst()).getSprite(this.sprite.getSecond());
-        return new PreparedMaterial(this.fills, sprite, sprite.getWidth() / this.size);
+        return new PreparedMaterial(this.fills, sprite, sprite.getX() / this.size);
     }
 }

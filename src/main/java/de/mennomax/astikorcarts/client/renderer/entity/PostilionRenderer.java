@@ -1,7 +1,7 @@
 package de.mennomax.astikorcarts.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import de.mennomax.astikorcarts.entity.PostilionEntity;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -22,7 +22,7 @@ public final class PostilionRenderer extends EntityRenderer<PostilionEntity> {
     public void render(final PostilionEntity postilion, final float yaw, final float delta, final PoseStack stack, final MultiBufferSource source, final int packedLight) {
         if (!postilion.isInvisible()) {
             stack.pushPose();
-            stack.mulPose(Vector3f.YP.rotationDegrees(180.0F - yaw));
+            stack.mulPose(Axis.YP.rotationDegrees(180.0F - yaw));
             final AABB bounds = postilion.getBoundingBox().move(-postilion.getX(), -postilion.getY(), -postilion.getZ());
             LevelRenderer.renderLineBox(stack, source.getBuffer(RenderType.lines()), bounds, 1.0F, 1.0F, 1.0F, 1.0F);
             stack.popPose();

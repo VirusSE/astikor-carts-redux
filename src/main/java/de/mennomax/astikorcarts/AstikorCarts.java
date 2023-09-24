@@ -13,6 +13,7 @@ import de.mennomax.astikorcarts.network.serverbound.ActionKeyMessage;
 import de.mennomax.astikorcarts.network.serverbound.OpenSupplyCartMessage;
 import de.mennomax.astikorcarts.network.serverbound.ToggleSlowMessage;
 import de.mennomax.astikorcarts.server.ServerInitializer;
+import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -26,6 +27,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.extensions.IForgeMenuType;
+import net.minecraftforge.common.util.ForgeSoundType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -105,30 +107,35 @@ public final class AstikorCarts {
         private SoundEvents() {
         }
 
-        private static final DeferredRegister<SoundEvent> R = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, ID);
+        private static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, ID);
 
-        public static final RegistryObject<SoundEvent> CART_ATTACHED = R.register("entity.cart.attach", () -> new SoundEvent(new ResourceLocation(ID, "entity.cart.attach")));
-        public static final RegistryObject<SoundEvent> CART_DETACHED = R.register("entity.cart.detach", () -> new SoundEvent(new ResourceLocation(ID, "entity.cart.detach")));
-        public static final RegistryObject<SoundEvent> CART_PLACED = R.register("entity.cart.place", () -> new SoundEvent(new ResourceLocation(ID, "entity.cart.place")));
-    }
+        public static final RegistryObject<SoundEvent> CART_ATTACHED = registerSoundEvent("entity.cart.attach");
+        public static final RegistryObject<SoundEvent> CART_DETACHED = registerSoundEvent("entity.cart.detach");
+        public static final RegistryObject<SoundEvent> CART_PLACED = registerSoundEvent("entity.cart.place");
 
-    public static final class Stats {
-        private Stats() {
-        }
-
-        public static final ResourceLocation CART_ONE_CM = new ResourceLocation(ID, "cart_one_cm");
-
-        private static void register(final IEventBus bus) {
-            bus.addListener(Stats::registerEntries);
-        }
-
-        private static void registerEntries(RegisterEvent e) {
-            if (Registry.STAT_TYPE_REGISTRY.equals(e.getRegistryKey())) {
-                Registry.register(Registry.CUSTOM_STAT, Stats.CART_ONE_CM, Stats.CART_ONE_CM);
-                net.minecraft.stats.Stats.CUSTOM.get(Stats.CART_ONE_CM, StatFormatter.DISTANCE);
-            }
+        private static RegistryObject<SoundEvent> registerSoundEvent(String name) {
+            ResourceLocation id = new ResourceLocation(ID, name);
+            return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(id));
         }
     }
+//    TODO: Re-add custom stat for cart distance
+//    public static final class Stats {
+//        private Stats() {
+//        }
+//
+//        public static final ResourceLocation CART_ONE_CM = new ResourceLocation(ID, "cart_one_cm");
+//
+//        private static void register(final IEventBus bus) {
+//            bus.addListener(Stats::registerEntries);
+//        }
+//
+//        private static void registerEntries(RegisterEvent e) {
+//            if (Registry.STAT_TYPE_REGISTRY.equals(e.getRegistryKey())) {
+//                Registry.register(Registry.CUSTOM_STAT, Stats.CART_ONE_CM, Stats.CART_ONE_CM);
+//                net.minecraft.stats.Stats.CUSTOM.get(Stats.CART_ONE_CM, StatFormatter.DISTANCE);
+//            }
+//        }
+//    }
 
     public static final class ContainerTypes {
         private ContainerTypes() {
@@ -142,10 +149,10 @@ public final class AstikorCarts {
     public AstikorCarts() {
         final Initializer.Context ctx = new InitContext();
         DistExecutor.runForDist(() -> ClientInitializer::new, () -> ServerInitializer::new).init(ctx);
-        Stats.register(ctx.modBus());
+//      Stats.register(ctx.modBus());
         Items.R.register(ctx.modBus());
         EntityTypes.R.register(ctx.modBus());
-        SoundEvents.R.register(ctx.modBus());
+        SoundEvents.SOUND_EVENTS.register(ctx.modBus());
         ContainerTypes.R.register(ctx.modBus());
     }
 

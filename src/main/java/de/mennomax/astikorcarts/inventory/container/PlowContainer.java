@@ -10,7 +10,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 public final class PlowContainer extends CartContainer {
     public PlowContainer(final int id, final Inventory playerInv, final FriendlyByteBuf buf) {
-        this(id, playerInv, (AbstractDrawnInventoryEntity) playerInv.player.level.getEntity(buf.readInt()));
+        this(id, playerInv, (AbstractDrawnInventoryEntity) playerInv.player.level().getEntity(buf.readInt()));
     }
 
     public PlowContainer(final int id, final Inventory playerInv, final AbstractDrawnInventoryEntity cart) {

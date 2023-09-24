@@ -23,7 +23,7 @@ public class ServerMessageContext extends MessageContext {
     }
 
     public ServerLevel getWorld() {
-        return this.getPlayer().getLevel();
+        return this.getPlayer().server.overworld();
     }
 
     public ServerPlayer getPlayer() {

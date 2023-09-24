@@ -46,6 +46,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 public final class SupplyCartEntity extends AbstractDrawnInventoryEntity {
     private static final ImmutableList<EntityDataAccessor<ItemStack>> CARGO = ImmutableList.of(
@@ -110,7 +111,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity {
     public InteractionResult interact(final Player player, final InteractionHand hand) {
         if (player.isSecondaryUseActive()) {
             this.openContainer(player);
-            return InteractionResult.sidedSuccess(this.level.isClientSide);
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
         }
         final InteractionResult bannerResult = this.useBanner(player, hand);
         if (bannerResult.consumesAction()) {
@@ -118,7 +119,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity {
         }
         final ItemStack held = player.getItemInHand(hand);
         if (this.hasJukebox()) {
-            if (this.level.isClientSide) return InteractionResult.SUCCESS;
+            if (this.level().isClientSide) return InteractionResult.SUCCESS;
             if (held.getItem() instanceof RecordItem && this.insertDisc(player, held) || this.ejectDisc(player)) {
                 return InteractionResult.CONSUME;
             } else {
@@ -128,7 +129,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity {
         if (this.isVehicle()) {
             return InteractionResult.PASS;
         }
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
         }
         return InteractionResult.SUCCESS;
@@ -139,8 +140,8 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity {
             final ItemStack stack = this.inventory.getStackInSlot(i);
             if (DiscTag.insert(stack, held)) {
                 this.inventory.setStackInSlot(i, stack);
-                ((ServerLevel) this.level).getChunkSource().broadcastAndSend(this, new ClientboundSetEntityDataPacket(this.getId(), this.entityData, false));
-                this.level.broadcastEntityEvent(this, (byte) 5);
+                ((ServerLevel) this.level()).getChunkSource().broadcastAndSend(this, new ClientboundSetEntityDataPacket(this.getId(), this.entityData.packDirty()));
+                this.level().broadcastEntityEvent(this, (byte) 5);
                 if (!player.getAbilities().instabuild) held.shrink(1);
                 return true;
             }
@@ -198,7 +199,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity {
     }
 
     @Override
-    public void positionRider(final Entity passenger) {
+    protected void positionRider(final Entity passenger, MoveFunction pCallback) {
         if (this.hasPassenger(passenger)) {
             final Vec3 forward = this.getLookAngle();
             final Vec3 origin = new Vec3(0.0D, this.getPassengersRidingOffset(), 1.0D / 16.0D);
@@ -235,7 +236,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity {
     }
 
     public void openContainer(final Player player) {
-        if (!this.level.isClientSide) {
+        if (!this.level().isClientSide) {
             player.openMenu(new SimpleMenuProvider((id, inv, plyr) -> {
                 return new SupplyCartContainer(id, inv, this);
             }, this.getDisplayName()));
