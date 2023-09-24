@@ -51,10 +51,8 @@ public final class AstikorCarts {
             .serverbound(OpenSupplyCartMessage::new).consumer(() -> OpenSupplyCartMessage::handle)
             .build();
 
+    public static final ResourceLocation CART_ONE_CM = new ResourceLocation(ID, "cart_one_cm"); // TODO: register this!
     public static final class Items {
-        private Items() {
-        }
-
         private static final DeferredRegister<Item> R = DeferredRegister.create(ForgeRegistries.ITEMS, ID);
 
         public static final RegistryObject<Item> WHEEL, SUPPLY_CART, PLOW, ANIMAL_CART;
@@ -76,7 +74,6 @@ public final class AstikorCarts {
             event.accept(Items.WHEEL);
         }
     }
-
 
     public static final class EntityTypes {
         private EntityTypes() {
@@ -108,8 +105,6 @@ public final class AstikorCarts {
     }
 
     public static final class SoundEvents {
-        private SoundEvents() {
-        }
 
         private static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, ID);
 
@@ -122,24 +117,6 @@ public final class AstikorCarts {
             return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(id));
         }
     }
-//    TODO: Re-add custom stat for cart distance
-//    public static final class Stats {
-//        private Stats() {
-//        }
-//
-//        public static final ResourceLocation CART_ONE_CM = new ResourceLocation(ID, "cart_one_cm");
-//
-//        private static void register(final IEventBus bus) {
-//            bus.addListener(Stats::registerEntries);
-//        }
-//
-//        private static void registerEntries(RegisterEvent e) {
-//            if (Registry.STAT_TYPE_REGISTRY.equals(e.getRegistryKey())) {
-//                Registry.register(Registry.CUSTOM_STAT, Stats.CART_ONE_CM, Stats.CART_ONE_CM);
-//                net.minecraft.stats.Stats.CUSTOM.get(Stats.CART_ONE_CM, StatFormatter.DISTANCE);
-//            }
-//        }
-//    }
 
     public static final class ContainerTypes {
         private ContainerTypes() {
@@ -148,15 +125,16 @@ public final class AstikorCarts {
         private static final DeferredRegister<MenuType<?>> R = DeferredRegister.create(ForgeRegistries.MENU_TYPES, ID);
 
         public static final RegistryObject<MenuType<PlowContainer>> PLOW_CART = R.register("plow", () -> IForgeMenuType.create(PlowContainer::new));
-    }
 
+
+    }
     public AstikorCarts() {
+
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         final Initializer.Context ctx = new ClientModEvents.InitContext();
         DistExecutor.runForDist(() -> ClientInitializer::new, () -> ServerInitializer::new).init(ctx);
-//      Stats.register(ctx.modBus());
-        Items.R.register(ctx.modBus());
+        Items.R.register(ctx.modBus());;
         EntityTypes.R.register(ctx.modBus());
         SoundEvents.SOUND_EVENTS.register(ctx.modBus());
         ContainerTypes.R.register(ctx.modBus());

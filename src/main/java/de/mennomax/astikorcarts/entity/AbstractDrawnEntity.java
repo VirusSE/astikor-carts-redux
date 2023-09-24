@@ -159,7 +159,7 @@ public abstract class AbstractDrawnEntity extends Entity implements IEntityAddit
         if (!this.isAlive()) {
             return;
         }
-//        this.addStats(this.getX() - startX, this.getY() - startY, this.getZ() - startZ);
+        this.addStats(this.getX() - startX, this.getY() - startY, this.getZ() - startZ);
         if (this.level().isClientSide) {
             for (final CartWheel wheel : this.wheels) {
                 wheel.tick();
@@ -175,19 +175,18 @@ public abstract class AbstractDrawnEntity extends Entity implements IEntityAddit
             this.drawn.pulledTick();
         }
     }
-//    TODO: Re-add stats
-//    private void addStats(final double x, final double y, final double z) {
-//        if (!this.level().isClientSide) {
-//            final int cm = Math.round(Mth.sqrt((float) (x * x + y * y + z * z)) * 100.0F);
-//            if (cm > 0) {
-//                for (final Entity passenger : this.getPassengers()) {
-//                    if (passenger instanceof Player player) {
-//                        player.awardStat(AstikorCarts.Stats.CART_ONE_CM, cm);
-//                    }
-//                }
-//            }
-//        }
-//    }
+    private void addStats(final double x, final double y, final double z) {
+        if (!this.level().isClientSide) {
+            final int cm = Math.round(Mth.sqrt((float) (x * x + y * y + z * z)) * 100.0F);
+            if (cm > 0) {
+                for (final Entity passenger : this.getPassengers()) {
+                    if (passenger instanceof Player player) {
+                        player.awardStat(AstikorCarts.CART_ONE_CM, cm);
+                    }
+                }
+            }
+        }
+    }
 
     public void initWheels() {
         this.wheels = Arrays.asList(new CartWheel(this, 0.9F), new CartWheel(this, -0.9F));
