@@ -10,27 +10,27 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import org.jetbrains.annotations.NotNull;
 
 public final class PlowScreen extends AbstractContainerScreen<CartContainer> {
-    private static final ResourceLocation PLOW_GUI_TEXTURES = new ResourceLocation(AstikorCarts.ID, "textures/gui/container/plow.png");
+    private static final ResourceLocation PLOW_GUI_BG = new ResourceLocation(AstikorCarts.ID, "textures/gui/plow.png");
 
     public PlowScreen(final CartContainer screenContainer, final Inventory inv, final Component titleIn) {
         super(screenContainer, inv, titleIn);
     }
 
+
     @Override
-    protected void renderBg(GuiGraphics graphics, float f, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, PLOW_GUI_TEXTURES);
-        final int i = (this.width - this.imageWidth) / 2;
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(guiGraphics);
+        guiGraphics.blit(PLOW_GUI_BG, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+        this.renderTooltip(guiGraphics, mouseX, mouseY);
+
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
-
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(guiGraphics);
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
-        this.renderTooltip(guiGraphics, mouseX, mouseY);
+    protected void renderBg(GuiGraphics p_283065_, float p_97788_, int p_97789_, int p_97790_) {
+
     }
 }
