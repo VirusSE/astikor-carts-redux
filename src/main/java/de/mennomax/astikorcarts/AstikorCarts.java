@@ -13,8 +13,11 @@ import de.mennomax.astikorcarts.network.serverbound.ActionKeyMessage;
 import de.mennomax.astikorcarts.network.serverbound.OpenSupplyCartMessage;
 import de.mennomax.astikorcarts.network.serverbound.ToggleSlowMessage;
 import de.mennomax.astikorcarts.server.ServerInitializer;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.stats.StatFormatter;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
@@ -23,10 +26,12 @@ import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.DeferredRegister;
@@ -35,6 +40,7 @@ import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
 import java.util.function.Supplier;
 
 @Mod(AstikorCarts.ID)
@@ -42,6 +48,10 @@ public final class AstikorCarts {
     public static final String ID = "astikorcarts";
 
     public static final Logger LOGGER = LoggerFactory.getLogger(AstikorCarts.class);
+
+    public static ResourceLocation prefix(String name) {
+        return new ResourceLocation(ID, name.toLowerCase(Locale.ROOT));
+    }
 
     public static final SimpleChannel CHANNEL = new NetBuilder(new ResourceLocation(ID, "main"))
             .version(1).optionalServer().requiredClient()
@@ -51,7 +61,18 @@ public final class AstikorCarts {
             .serverbound(OpenSupplyCartMessage::new).consumer(() -> OpenSupplyCartMessage::handle)
             .build();
 
-    public static final ResourceLocation CART_ONE_CM = new ResourceLocation(ID, "cart_one_cm"); // TODO: register this!
+
+    public class ACStats {
+
+        public static final DeferredRegister<ResourceLocation> AC_STATS = DeferredRegister.create(Registries.CUSTOM_STAT, ID);
+        public static final RegistryObject<ResourceLocation> CART_ONE_CM = AC_STATS.register("cart_one_cm", () -> makeStat("cart_one_cm"));
+        private static ResourceLocation makeStat(String key) {
+            return new ResourceLocation(ID, key);
+        }
+        public static void initStats() {
+            Stats.CUSTOM.get(CART_ONE_CM.get(), StatFormatter.DISTANCE);
+        }
+    }
     public static final class Items {
         private static final DeferredRegister<Item> R = DeferredRegister.create(ForgeRegistries.ITEMS, ID);
 
@@ -130,16 +151,21 @@ public final class AstikorCarts {
     }
     public AstikorCarts() {
 
-        IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
         final Initializer.Context ctx = new ClientModEvents.InitContext();
         DistExecutor.runForDist(() -> ClientInitializer::new, () -> ServerInitializer::new).init(ctx);
+        ctx.modBus().addListener(EventPriority.NORMAL, this::setup);
         Items.R.register(ctx.modBus());;
         EntityTypes.R.register(ctx.modBus());
         SoundEvents.SOUND_EVENTS.register(ctx.modBus());
         ContainerTypes.R.register(ctx.modBus());
+        ACStats.AC_STATS.register(ctx.modBus());
 
-        eventBus.addListener(this::addCreative);
+        ctx.modBus().addListener(this::addCreative);
+    }
+    private void setup(final FMLCommonSetupEvent event) {
+        event.enqueueWork(() -> {
+            ACStats.initStats();
+        });
     }
 
     public static class ClientModEvents {
