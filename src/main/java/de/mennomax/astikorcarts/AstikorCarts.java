@@ -25,7 +25,7 @@ import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
@@ -40,7 +40,6 @@ import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Locale;
 import java.util.function.Supplier;
 
 @Mod(AstikorCarts.ID)
@@ -49,20 +48,16 @@ public final class AstikorCarts {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(AstikorCarts.class);
 
-    public static ResourceLocation prefix(String name) {
-        return new ResourceLocation(ID, name.toLowerCase(Locale.ROOT));
-    }
-
     public static final SimpleChannel CHANNEL = new NetBuilder(new ResourceLocation(ID, "main"))
             .version(1).optionalServer().requiredClient()
             .serverbound(ActionKeyMessage::new).consumer(() -> ActionKeyMessage::handle)
             .serverbound(ToggleSlowMessage::new).consumer(() -> ToggleSlowMessage::handle)
-            .clientbound(UpdateDrawnMessage::new).consumer(() -> new UpdateDrawnMessage.Handler())
+            .clientbound(UpdateDrawnMessage::new).consumer(UpdateDrawnMessage.Handler::new)
             .serverbound(OpenSupplyCartMessage::new).consumer(() -> OpenSupplyCartMessage::handle)
             .build();
 
 
-    public class ACStats {
+    public static class ACStats {
 
         public static final DeferredRegister<ResourceLocation> AC_STATS = DeferredRegister.create(Registries.CUSTOM_STAT, ID);
         public static final RegistryObject<ResourceLocation> CART_ONE_CM = AC_STATS.register("cart_one_cm", () -> makeStat("cart_one_cm"));
@@ -86,16 +81,14 @@ public final class AstikorCarts {
             ANIMAL_CART = R.register("animal_cart", cart);
         }
     }
-
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
-            event.accept(Items.ANIMAL_CART);
+    private void addItemsToTabs(CreativeModeTabEvent.BuildContents event) {
+        if (event.getTab() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+            event.accept(Items.WHEEL);
             event.accept(Items.SUPPLY_CART);
             event.accept(Items.PLOW);
-            event.accept(Items.WHEEL);
+            event.accept(Items.ANIMAL_CART);
         }
     }
-
     public static final class EntityTypes {
         private EntityTypes() {
         }
@@ -152,20 +145,17 @@ public final class AstikorCarts {
     public AstikorCarts() {
 
         final Initializer.Context ctx = new ClientModEvents.InitContext();
-        DistExecutor.runForDist(() -> ClientInitializer::new, () -> ServerInitializer::new).init(ctx);
+        DistExecutor.safeRunForDist(() -> ClientInitializer::new, () -> ServerInitializer::new).init(ctx);
         ctx.modBus().addListener(EventPriority.NORMAL, this::setup);
         Items.R.register(ctx.modBus());;
         EntityTypes.R.register(ctx.modBus());
         SoundEvents.SOUND_EVENTS.register(ctx.modBus());
         ContainerTypes.R.register(ctx.modBus());
         ACStats.AC_STATS.register(ctx.modBus());
-
-        ctx.modBus().addListener(this::addCreative);
+        ctx.modBus().addListener(this::addItemsToTabs);
     }
     private void setup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
-            ACStats.initStats();
-        });
+        event.enqueueWork(ACStats::initStats);
     }
 
     public static class ClientModEvents {

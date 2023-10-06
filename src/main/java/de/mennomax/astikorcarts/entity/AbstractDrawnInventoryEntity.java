@@ -52,9 +52,9 @@ public abstract class AbstractDrawnInventoryEntity extends AbstractDrawnEntity {
     @Override
     public void onDestroyedAndDoDrops(final DamageSource source) {
         for (int i = 0; i < this.inventory.getSlots(); i++) {
-            ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), this.inventory.getStackInSlot(i));
+            ItemEntity itementity = new ItemEntity(this.level, this.getX(), this.getY(), this.getZ(), this.inventory.getStackInSlot(i));
             itementity.setDefaultPickUpDelay();
-            this.level().addFreshEntity(itementity);
+            this.level.addFreshEntity(itementity);
         }
     }
 
@@ -86,4 +86,6 @@ public abstract class AbstractDrawnInventoryEntity extends AbstractDrawnEntity {
             return this.itemHandler.cast();
         return super.getCapability(capability, facing);
     }
+
+    protected abstract void positionRider(Entity passenger, MoveFunction pCallback);
 }

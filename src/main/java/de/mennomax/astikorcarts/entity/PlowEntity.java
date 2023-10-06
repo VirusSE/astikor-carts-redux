@@ -51,7 +51,7 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
 
     @Override
     protected ItemStackHandler initInventory() {
-        return new CartItemStackHandler<PlowEntity>(SLOT_COUNT, this) {
+        return new CartItemStackHandler<>(SLOT_COUNT, this) {
             @Override
             protected void onLoad() {
                 for (int i = 0; i < TOOLS.size(); i++) {
@@ -76,7 +76,7 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
         if (this.getPulling() == null) {
             return;
         }
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
             Player player = null;
             if (this.getPulling() instanceof Player pl) {
                 player = pl;
@@ -103,7 +103,7 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
                 final int count = stack.getCount();
                 stack.getItem().useOn(new ProxyItemUseContext(player, stack, new BlockHitResult(Vec3.ZERO, Direction.UP, blockPos, false)));
                 if (damageable && stack.getCount() < count) {
-                    this.playSound(SoundEvents.ITEM_BREAK, 0.8F, 0.8F + this.level().random.nextFloat() * 0.4F);
+                    this.playSound(SoundEvents.ITEM_BREAK, 0.8F, 0.8F + this.level.random.nextFloat() * 0.4F);
                     this.updateSlot(i);
                 }
             }
@@ -114,16 +114,16 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
     public InteractionResult interact(final Player player, final InteractionHand hand) {
         if (player.isSecondaryUseActive()) {
             this.openContainer(player);
-            return InteractionResult.sidedSuccess(this.level().isClientSide);
+            return InteractionResult.sidedSuccess(this.level.isClientSide);
         }
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
             this.entityData.set(PLOWING, !this.entityData.get(PLOWING));
         }
-        return InteractionResult.sidedSuccess(this.level().isClientSide);
+        return InteractionResult.sidedSuccess(this.level.isClientSide);
     }
 
     public void updateSlot(final int slot) {
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
             if (this.inventory.getStackInSlot(slot).isEmpty()) {
                 this.entityData.set(TOOLS.get(slot), ItemStack.EMPTY);
             } else {
@@ -161,6 +161,11 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
     protected void addAdditionalSaveData(final CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("Plowing", this.entityData.get(PLOWING));
+    }
+
+    @Override
+    protected void positionRider(Entity passenger, MoveFunction pCallback) {
+        
     }
 
     private void openContainer(final Player player) {

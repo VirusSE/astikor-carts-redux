@@ -25,7 +25,7 @@ public final class PostilionEntity extends DummyLivingEntity {
     @Override
     public void tick() {
         super.tick();
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
             final LivingEntity coachman = this.getCoachman();
             if (coachman != null) {
                 this.setYRot(coachman.getYRot());
@@ -43,7 +43,7 @@ public final class PostilionEntity extends DummyLivingEntity {
     private LivingEntity getCoachman() {
         final Entity mount = this.getVehicle();
         if (mount != null) {
-            return AstikorWorld.get(this.level()).map(m -> m.getDrawn(mount)).orElse(Optional.empty())
+            return AstikorWorld.get(this.level).map(m -> m.getDrawn(mount)).orElse(Optional.empty())
                 .map(AbstractDrawnEntity::getControllingPassenger).orElse(null);
         }
         return null;

@@ -62,7 +62,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity impleme
 
     @Override
     protected ItemStackHandler initInventory() {
-        return new CartItemStackHandler<SupplyCartEntity>(54, this) {
+        return new CartItemStackHandler<>(54, this) {
             @Override
             protected void onLoad() {
                 super.onLoad();
@@ -81,9 +81,9 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity impleme
                     }
                 }
                 final Iterator<Object2IntMap.Entry<Item>> topTotals = totals.object2IntEntrySet().stream()
-                    .sorted(Comparator.<Object2IntMap.Entry<Item>>comparingInt(e -> e.getKey() instanceof BlockItem ? 0 : 1)
-                        .thenComparingInt(e -> -e.getIntValue()))
-                    .limit(CARGO.size()).iterator();
+                        .sorted(Comparator.<Object2IntMap.Entry<Item>>comparingInt(e -> e.getKey() instanceof BlockItem ? 0 : 1)
+                                .thenComparingInt(e -> -e.getIntValue()))
+                        .limit(CARGO.size()).iterator();
                 final ItemStack[] items = new ItemStack[CARGO.size()];
                 Arrays.fill(items, ItemStack.EMPTY);
                 final int forth = this.getSlots() / CARGO.size();
@@ -107,7 +107,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity impleme
     public InteractionResult interact(final Player player, final InteractionHand hand) {
         if (player.isSecondaryUseActive()) {
             this.openContainer(player);
-            return InteractionResult.sidedSuccess(this.level().isClientSide);
+            return InteractionResult.sidedSuccess(this.level.isClientSide);
         }
         final InteractionResult bannerResult = this.useBanner(player, hand);
         if (bannerResult.consumesAction()) {
@@ -115,7 +115,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity impleme
         }
         final ItemStack held = player.getItemInHand(hand);
         if (this.hasJukebox()) {
-            if (this.level().isClientSide) return InteractionResult.SUCCESS;
+            if (this.level.isClientSide) return InteractionResult.SUCCESS;
             if (held.getItem() instanceof RecordItem && this.insertDisc(player, held) || this.ejectDisc(player)) {
                 return InteractionResult.CONSUME;
             } else {
@@ -125,7 +125,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity impleme
         if (this.isVehicle()) {
             return InteractionResult.PASS;
         }
-        if (!this.level().isClientSide) {
+        if (!this.level.isClientSide) {
             return player.startRiding(this) ? InteractionResult.CONSUME : InteractionResult.PASS;
         }
         return InteractionResult.SUCCESS;
@@ -137,7 +137,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity impleme
             if (DiscTag.insert(stack, held)) {
                 this.inventory.setStackInSlot(i, stack);
                 this.getServer().overworld().getLevel().getChunkSource().broadcastAndSend(this, new ClientboundSetEntityDataPacket(this.getId(), this.entityData.packDirty()));
-                this.level().broadcastEntityEvent(this, (byte) 5);
+                this.level.broadcastEntityEvent(this, (byte) 5);
                 if (!player.getAbilities().instabuild) held.shrink(1);
                 return true;
             }
@@ -232,10 +232,8 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity impleme
     }
 
     public void openContainer(final Player player) {
-        if (!this.level().isClientSide) {
-            player.openMenu(new SimpleMenuProvider((id, inv, plyr) -> {
-                return new SupplyCartContainer(id, inv, this);
-            }, this.getDisplayName()));
+        if (!this.level.isClientSide) {
+            player.openMenu(new SimpleMenuProvider((id, inv, plyr) -> new SupplyCartContainer(id, inv, this), this.getDisplayName()));
         }
     }
 
