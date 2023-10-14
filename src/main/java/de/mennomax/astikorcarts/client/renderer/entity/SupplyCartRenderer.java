@@ -189,7 +189,7 @@ public final class SupplyCartRenderer extends DrawnRenderer<SupplyCartEntity, Su
                 } else if (!model.isCustomRenderer()) {
                     stack.mulPose(Axis.YP.rotationDegrees(180.0F));
                 }
-                renderer.render(itemStack, ItemDisplayContext.FIXED, false, stack, source, packedLight, OverlayTexture.NO_OVERLAY, model);
+                renderer.render(itemStack, ItemDisplayContext.NONE, false, stack, source, packedLight, OverlayTexture.NO_OVERLAY, model);
             } else {
                 rng.setSeed(32L * i + Objects.hashCode(ForgeRegistries.ITEMS.getKey(itemStack.getItem())));
                 stack.translate(x, -0.15D + ((ix + iz) % 2 == 0 ? 0.0D : 1.0e-4D), z);
