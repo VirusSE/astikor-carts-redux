@@ -52,10 +52,9 @@ public final class AstikorCarts {
             .version(1).optionalServer().requiredClient()
             .serverbound(ActionKeyMessage::new).consumer(() -> ActionKeyMessage::handle)
             .serverbound(ToggleSlowMessage::new).consumer(() -> ToggleSlowMessage::handle)
-            .clientbound(UpdateDrawnMessage::new).consumer(UpdateDrawnMessage.Handler::new)
+            .clientbound(UpdateDrawnMessage::new).consumer(() -> new UpdateDrawnMessage.Handler())
             .serverbound(OpenSupplyCartMessage::new).consumer(() -> OpenSupplyCartMessage::handle)
             .build();
-
 
     public static class ACStats {
 
@@ -145,7 +144,7 @@ public final class AstikorCarts {
     public AstikorCarts() {
 
         final Initializer.Context ctx = new ClientModEvents.InitContext();
-        DistExecutor.safeRunForDist(() -> ClientInitializer::new, () -> ServerInitializer::new).init(ctx);
+        DistExecutor.runForDist(() -> ClientInitializer::new, () -> ServerInitializer::new).init(ctx);
         ctx.modBus().addListener(EventPriority.NORMAL, this::setup);
         Items.R.register(ctx.modBus());;
         EntityTypes.R.register(ctx.modBus());
