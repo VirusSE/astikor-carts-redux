@@ -1,14 +1,17 @@
 package de.mennomax.astikorcarts.config;
 
 import net.jodah.typetools.TypeResolver;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ItemSteerable;
 import net.minecraft.world.entity.Saddleable;
 import net.minecraft.world.entity.animal.horse.Llama;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ModConfigSpec;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,17 +25,17 @@ public final class AstikorCartsConfig {
         return Holder.COMMON;
     }
 
-    public static ForgeConfigSpec spec() {
+    public static ModConfigSpec spec() {
         return Holder.COMMON_SPEC;
     }
 
     private static final class Holder {
         private static final Common COMMON;
 
-        private static final ForgeConfigSpec COMMON_SPEC;
+        private static final ModConfigSpec COMMON_SPEC;
 
         static {
-            final Pair<Common, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(Common::new);
+            final Pair<Common, ModConfigSpec> specPair = new ModConfigSpec.Builder().configure(Common::new);
             COMMON = specPair.getLeft();
             COMMON_SPEC = specPair.getRight();
         }
@@ -43,7 +46,7 @@ public final class AstikorCartsConfig {
         public final CartConfig animalCart;
         public final CartConfig plow;
 
-        Common(final ForgeConfigSpec.Builder builder) {
+        Common(final ModConfigSpec.Builder builder) {
             builder.comment("Configuration for all carts and cart-like vehicles, check log for automatic \"pull_animals\" list.").push("carts");
             this.supplyCart = new CartConfig(builder, "supply_cart", "The Supply Cart, a type of cart that stores items");
             this.animalCart = new CartConfig(builder, "animal_cart", "The Animal Cart, a type of cart to haul other animals");
@@ -57,7 +60,7 @@ public final class AstikorCartsConfig {
 
         static String referencePullAnimals() {
             return "[\n" +
-                StreamSupport.stream(ForgeRegistries.ENTITY_TYPES.spliterator(), false)
+                StreamSupport.stream(BuiltInRegistries.ENTITY_TYPE.spliterator(), false)
                     .filter(type -> {
                         final Class<?> entityClass = TypeResolver.resolveRawArgument(EntityType.EntityFactory.class, Objects.requireNonNull(
                             ObfuscationReflectionHelper.getPrivateValue(EntityType.class, type, "f_20535_"),
@@ -68,7 +71,7 @@ public final class AstikorCartsConfig {
                             !ItemSteerable.class.isAssignableFrom(entityClass) &&
                             !Llama.class.isAssignableFrom(entityClass); // no horse-llamas
                     })
-                    .map(ForgeRegistries.ENTITY_TYPES::getKey)
+                    .map(BuiltInRegistries.ENTITY_TYPES::getKey)
                     .filter(Objects::nonNull)
                     .map(type -> "    \"" + type + "\"")
                     .collect(Collectors.joining(",\n")) +
@@ -77,11 +80,11 @@ public final class AstikorCartsConfig {
     }
 
     public static class CartConfig {
-        public final ForgeConfigSpec.ConfigValue<ArrayList<String>> pullAnimals;
-        public final ForgeConfigSpec.DoubleValue slowSpeed;
-        public final ForgeConfigSpec.DoubleValue pullSpeed;
+        public final ModConfigSpec.ConfigValue<ArrayList<String>> pullAnimals;
+        public final ModConfigSpec.DoubleValue slowSpeed;
+        public final ModConfigSpec.DoubleValue pullSpeed;
 
-        CartConfig(final ForgeConfigSpec.Builder builder, final String name, final String description) {
+        CartConfig(final ModConfigSpec.Builder builder, final String name, final String description) {
             builder.comment(description).push(name);
             this.pullAnimals = builder
                 .comment(

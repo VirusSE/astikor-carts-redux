@@ -27,12 +27,8 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.*;
 import org.lwjgl.glfw.GLFW;
 
 public final class ClientInitializer extends CommonInitializer {
@@ -41,7 +37,7 @@ public final class ClientInitializer extends CommonInitializer {
     @Override
     public void init(final Context mod) {
         super.init(mod);
-        mod.bus().<TickEvent.ClientTickEvent>addListener(e -> {
+        mod.bus().<ClientTickEvent>addListener(e -> {
             if (e.phase == TickEvent.Phase.END) {
                 final Minecraft mc = Minecraft.getInstance();
                 final Level world = mc.level;

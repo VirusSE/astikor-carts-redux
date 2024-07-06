@@ -24,7 +24,7 @@ public abstract class AbstractDrawnInventoryEntity extends AbstractDrawnEntity {
         super(entityTypeIn, worldIn);
     }
 
-    protected abstract CartItemStackHandler<SupplyCartEntity> initInventory();
+    protected abstract CartItemStackHandler<PlowEntity> initInventory();
 
     @Override
     public SlotAccess getSlot(final int slot) {
@@ -83,4 +83,6 @@ public abstract class AbstractDrawnInventoryEntity extends AbstractDrawnEntity {
             return this.itemHandler.cast();
         return super.getCapability(capability, facing);
     }
+
+    public abstract double getPassengersRidingOffset();
 }

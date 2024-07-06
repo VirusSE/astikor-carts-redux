@@ -6,7 +6,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class CartContainer extends AbstractContainerMenu {
     protected final ItemStackHandler cartInv;
@@ -25,7 +26,7 @@ public abstract class CartContainer extends AbstractContainerMenu {
     }
 
     @Override
-    public ItemStack quickMoveStack(final Player playerIn, final int index) {
+    public @NotNull ItemStack quickMoveStack(final Player playerIn, final int index) {
         final ItemStack itemstack = ItemStack.EMPTY;
         final Slot slot = this.slots.get(index);
         if (slot.hasItem()) {

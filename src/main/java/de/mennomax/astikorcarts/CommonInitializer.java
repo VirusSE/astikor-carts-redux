@@ -21,7 +21,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 public class CommonInitializer implements Initializer {
     @Override
     public void init(final Context mod) {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, AstikorCartsConfig.spec());
+        ModLoadingContext.get().register(ModConfig.Type.COMMON, AstikorCartsConfig.spec());
         mod.modBus().<FMLLoadCompleteEvent>addListener(e -> {
             AstikorCarts.LOGGER.info("Automatic pull animal configuration:\n{}", AstikorCartsConfig.Common.getComment());
         });

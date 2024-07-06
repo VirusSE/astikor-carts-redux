@@ -4,7 +4,7 @@ import de.mennomax.astikorcarts.entity.AbstractDrawnInventoryEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
-import net.minecraftforge.items.SlotItemHandler;
+import net.neoforged.neoforge.items.SlotItemHandler;
 
 public final class SupplyCartContainer extends CartContainer {
     public SupplyCartContainer(final int id, final Inventory playerInv, final AbstractDrawnInventoryEntity cart) {

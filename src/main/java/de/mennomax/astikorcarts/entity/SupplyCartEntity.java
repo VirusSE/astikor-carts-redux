@@ -38,11 +38,15 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Objects;
 
 public final class SupplyCartEntity extends AbstractDrawnInventoryEntity implements Container {
     private static final ImmutableList<EntityDataAccessor<ItemStack>> CARGO = ImmutableList.of(
@@ -66,7 +70,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity impleme
     }
 
     @Override
-    protected CartItemStackHandler<SupplyCartEntity> initInventory() {
+    protected CartItemStackHandler<PlowEntity> initInventory() {
         return new CartItemStackHandler<SupplyCartEntity>(54, this) {
             @Override
             protected void onLoad() {
@@ -137,11 +141,11 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity impleme
     }
 
     private boolean insertDisc(final Player player, final ItemStack held) {
-        for (int i = 0; i < this.inventory; i++) {
+        for (int i = 0; i < this.inventory.getSlots(); i++) {
             final ItemStack stack = this.inventory.getStackInSlot(i);
             if (DiscTag.insert(stack, held)) {
                 this.inventory.setStackInSlot(i, stack);
-                this.getServer().overworld().getLevel().getChunkSource().broadcastAndSend(this, new ClientboundSetEntityDataPacket(this.getId(), this.entityData.packDirty()));
+                this.getServer().overworld().getLevel().getChunkSource().broadcastAndSend(this, new ClientboundSetEntityDataPacket(this.getId(), Objects.requireNonNull(this.entityData.packDirty())));
                 this.level().broadcastEntityEvent(this, (byte) 5);
                 if (!player.getAbilities().instabuild) held.shrink(1);
                 return true;

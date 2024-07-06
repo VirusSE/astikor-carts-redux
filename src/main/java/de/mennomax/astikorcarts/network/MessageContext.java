@@ -1,7 +1,6 @@
 package de.mennomax.astikorcarts.network;
 
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.fml.LogicalSide;
 
 public abstract class MessageContext {
     protected final NetworkEvent.Context context;

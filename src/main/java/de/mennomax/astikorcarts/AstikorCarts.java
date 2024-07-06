@@ -154,8 +154,6 @@ public final class AstikorCarts {
         bus.addListener(this::addCreative);
     }
     private void setup(final FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
-            ACStats.initStats();
-        });
+        event.enqueueWork(ACStats::initStats);
     }
 }

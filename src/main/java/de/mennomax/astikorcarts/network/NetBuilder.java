@@ -6,6 +6,9 @@ import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.fml.DistExecutor;
+import net.neoforged.fml.LogicalSide;
+import net.neoforged.neoforge.network.registration.NetworkRegistry;
 
 import java.util.Objects;
 import java.util.function.BiConsumer;

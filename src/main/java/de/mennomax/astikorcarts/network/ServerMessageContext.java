@@ -3,8 +3,7 @@ package de.mennomax.astikorcarts.network;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.network.NetworkEvent;
+import net.neoforged.fml.LogicalSide;
 
 import java.util.Objects;
 
@@ -15,8 +14,9 @@ public class ServerMessageContext extends MessageContext {
 
     @Override
     public LogicalSide getSide() {
-        return LogicalSide.SERVER;
+        return null;
     }
+
 
     public MinecraftServer getServer() {
         return this.getPlayer().server;

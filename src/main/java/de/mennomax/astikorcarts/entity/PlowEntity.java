@@ -27,8 +27,6 @@ import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.network.NetworkHooks;
 
 public final class PlowEntity extends AbstractDrawnInventoryEntity {
     private static final int SLOT_COUNT = 3;
@@ -45,12 +43,17 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
     }
 
     @Override
+    protected void defineSynchedData(SynchedEntityData.Builder pBuilder) {
+
+    }
+
+    @Override
     protected AstikorCartsConfig.CartConfig getConfig() {
         return AstikorCartsConfig.get().plow;
     }
 
     @Override
-    protected CartItemStackHandler<SupplyCartEntity> initInventory() {
+    protected CartItemStackHandler<PlowEntity> initInventory() {
         return new CartItemStackHandler<PlowEntity>(SLOT_COUNT, this) {
             @Override
             protected void onLoad() {
@@ -161,6 +164,11 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
     protected void addAdditionalSaveData(final CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("Plowing", this.entityData.get(PLOWING));
+    }
+
+    @Override
+    public double getPassengersRidingOffset() {
+        return 0;
     }
 
     private void openContainer(final Player player) {

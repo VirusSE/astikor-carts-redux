@@ -382,6 +382,10 @@ public abstract class AbstractDrawnEntity extends Entity implements IEntityAddit
         return this.wheels.get(wheel).getRotationIncrement();
     }
 
+    public abstract <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing);
+
+    public abstract double getPassengersRidingOffset();
+
     public abstract Item getCartItem();
 
     /**
