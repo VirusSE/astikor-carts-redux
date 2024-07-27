@@ -10,7 +10,6 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -42,12 +41,17 @@ public final class AstikorCartsConfig {
         public final CartConfig supplyCart;
         public final CartConfig animalCart;
         public final CartConfig plow;
+        public final ForgeConfigSpec.BooleanValue lightningInvulnerable;
+
 
         Common(final ForgeConfigSpec.Builder builder) {
             builder.comment("Configuration for all carts and cart-like vehicles, check log for automatic \"pull_animals\" list.").push("carts");
+            this.lightningInvulnerable = builder
+                    .comment("Enable carts being invulnerable to lightning (If false when struck, all items will disappear and mobs escape!)")
+                    .define("lightningInvulnerable", true);
             this.supplyCart = new CartConfig(builder, "supply_cart", "The Supply Cart, a type of cart that stores items");
             this.animalCart = new CartConfig(builder, "animal_cart", "The Animal Cart, a type of cart to haul other animals");
-            this.plow = new CartConfig(builder, "plow", "The Plow, an animal pulled machine for tilling soil and creating paths");
+            this.plow = new CartConfig(builder, "plow", "The Plow, n animal pulled machine for tilling soil and creating paths");
             builder.pop();
         }
 
