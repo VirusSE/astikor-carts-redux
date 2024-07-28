@@ -98,7 +98,8 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
                 final float offset = 38.0F - i * 38.0F;
                 final double blockPosX = this.getX() + Mth.sin((float) Math.toRadians(this.getYRot() - offset)) * BLADEOFFSET;
                 final double blockPosZ = this.getZ() - Mth.cos((float) Math.toRadians(this.getYRot() - offset)) * BLADEOFFSET;
-                final BlockPos blockPos = new BlockPos((int) blockPosX, (int) (this.getY() - 0.5D), (int) blockPosZ);
+                final Vec3 vec3 = new Vec3(blockPosX, this.getY() - 0.5D, blockPosZ);
+                final BlockPos blockPos = BlockPos.containing(vec3);
                 final boolean damageable = stack.isDamageableItem();
                 final int count = stack.getCount();
                 stack.getItem().useOn(new ProxyItemUseContext(player, stack, new BlockHitResult(Vec3.ZERO, Direction.UP, blockPos, false)));
