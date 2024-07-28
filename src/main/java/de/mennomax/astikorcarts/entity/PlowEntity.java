@@ -35,9 +35,9 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
     private static final double BLADEOFFSET = 1.7D;
     private static final EntityDataAccessor<Boolean> PLOWING = SynchedEntityData.defineId(PlowEntity.class, EntityDataSerializers.BOOLEAN);
     private static final ImmutableList<EntityDataAccessor<ItemStack>> TOOLS = ImmutableList.of(
-        SynchedEntityData.defineId(PlowEntity.class, EntityDataSerializers.ITEM_STACK),
-        SynchedEntityData.defineId(PlowEntity.class, EntityDataSerializers.ITEM_STACK),
-        SynchedEntityData.defineId(PlowEntity.class, EntityDataSerializers.ITEM_STACK));
+            SynchedEntityData.defineId(PlowEntity.class, EntityDataSerializers.ITEM_STACK),
+            SynchedEntityData.defineId(PlowEntity.class, EntityDataSerializers.ITEM_STACK),
+            SynchedEntityData.defineId(PlowEntity.class, EntityDataSerializers.ITEM_STACK));
 
     public PlowEntity(final EntityType<? extends Entity> entityTypeIn, final Level worldIn) {
         super(entityTypeIn, worldIn);
@@ -98,7 +98,8 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
                 final float offset = 38.0F - i * 38.0F;
                 final double blockPosX = this.getX() + Mth.sin((float) Math.toRadians(this.getYRot() - offset)) * BLADEOFFSET;
                 final double blockPosZ = this.getZ() - Mth.cos((float) Math.toRadians(this.getYRot() - offset)) * BLADEOFFSET;
-                final BlockPos blockPos = new BlockPos((int) blockPosX, (int) (this.getY() - 0.5D), (int) blockPosZ);
+                final Vec3 vec3 = new Vec3(blockPosX, this.getY() - 0.5D, blockPosZ);
+                final BlockPos blockPos = BlockPos.containing(vec3);
                 final boolean damageable = stack.isDamageableItem();
                 final int count = stack.getCount();
                 stack.getItem().useOn(new ProxyItemUseContext(player, stack, new BlockHitResult(Vec3.ZERO, Direction.UP, blockPos, false)));
@@ -166,8 +167,8 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
     private void openContainer(final Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             NetworkHooks.openScreen(serverPlayer,
-                new SimpleMenuProvider((windowId, playerInventory, p) -> new PlowContainer(windowId, playerInventory, this), this.getDisplayName()),
-                buf -> buf.writeInt(this.getId())
+                    new SimpleMenuProvider((windowId, playerInventory, p) -> new PlowContainer(windowId, playerInventory, this), this.getDisplayName()),
+                    buf -> buf.writeInt(this.getId())
             );
         }
     }
