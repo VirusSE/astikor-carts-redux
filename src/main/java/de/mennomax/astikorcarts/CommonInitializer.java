@@ -17,6 +17,7 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 public class CommonInitializer implements Initializer {
     @Override
@@ -42,8 +43,8 @@ public class CommonInitializer implements Initializer {
                 rider.stopRiding();
             }
         });
-        mod.bus().<TickEvent.LevelTickEvent>addListener(e -> {
-            if (e.phase == TickEvent.Phase.END) {
+        mod.bus().<LevelTickEvent>addListener(e -> {
+            if (e.phase == LevelTickEvent.Phase.END) {
                 AstikorWorld.get(e.level).ifPresent(AstikorWorld::tick);
             }
         });

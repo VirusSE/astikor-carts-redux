@@ -148,4 +148,6 @@ public abstract class DummyLivingEntity extends LivingEntity {
     protected void updateInvisibilityStatus() {
         this.setInvisible(true);
     }
+
+    public abstract double getMyRidingOffset();
 }

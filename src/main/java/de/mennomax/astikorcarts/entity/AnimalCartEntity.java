@@ -2,6 +2,8 @@ package de.mennomax.astikorcarts.entity;
 
 import de.mennomax.astikorcarts.AstikorCarts;
 import de.mennomax.astikorcarts.config.AstikorCartsConfig;
+import net.minecraft.core.Direction;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -15,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 public final class AnimalCartEntity extends AbstractDrawnEntity {
     public AnimalCartEntity(final EntityType<? extends Entity> entityTypeIn, final Level worldIn) {
@@ -47,6 +50,11 @@ public final class AnimalCartEntity extends AbstractDrawnEntity {
                 }
             }
         }
+    }
+
+    @Override
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
+        return null;
     }
 
     @Override
@@ -134,5 +142,15 @@ public final class AnimalCartEntity extends AbstractDrawnEntity {
     @Override
     public Item getCartItem() {
         return AstikorCarts.Items.ANIMAL_CART.get();
+    }
+
+    @Override
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
+
+    }
+
+    @Override
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
+
     }
 }

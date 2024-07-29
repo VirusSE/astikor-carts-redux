@@ -25,10 +25,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +47,13 @@ public final class AstikorCarts {
 
     public static ResourceLocation prefix(String name) {
         return new ResourceLocation(ID, name.toLowerCase(Locale.ROOT));
+    }
+
+    @SubscribeEvent
+    public static void register(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar(ID)
+                .versioned("1.2.3")
+                .optional();
     }
 
     public static final SimpleChannel CHANNEL = new NetBuilder(new ResourceLocation(ID, "main"))

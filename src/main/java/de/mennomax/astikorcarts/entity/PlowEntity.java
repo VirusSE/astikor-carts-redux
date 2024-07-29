@@ -9,6 +9,7 @@ import de.mennomax.astikorcarts.util.ProxyItemUseContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -52,9 +53,11 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
         return AstikorCartsConfig.get().plow;
     }
 
+
+
     @Override
-    protected CartItemStackHandler<PlowEntity> initInventory() {
-        return new CartItemStackHandler<PlowEntity>(SLOT_COUNT, this) {
+    protected CartItemStackHandler<SupplyCartEntity> initInventory() {
+        return new CartItemStackHandler<SupplyCartEntity>(SLOT_COUNT, this) {
             @Override
             protected void onLoad() {
                 for (int i = 0; i < TOOLS.size(); i++) {
@@ -63,8 +66,8 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
             }
 
             @Override
-            protected void onContentsChanged(final int slot) {
-                this.cart.updateSlot(slot);
+            protected void onContentsChanged(int slot) {
+                updateSlot(slot);
             }
         };
     }
@@ -101,7 +104,8 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
                 final float offset = 38.0F - i * 38.0F;
                 final double blockPosX = this.getX() + Mth.sin((float) Math.toRadians(this.getYRot() - offset)) * BLADEOFFSET;
                 final double blockPosZ = this.getZ() - Mth.cos((float) Math.toRadians(this.getYRot() - offset)) * BLADEOFFSET;
-                final BlockPos blockPos = new BlockPos((int) blockPosX, (int) (this.getY() - 0.5D), (int) blockPosZ);
+                final Vec3 vec3 = new Vec3(blockPosX, this.getY() - 0.5D, blockPosZ);
+                final BlockPos blockPos = BlockPos.containing(vec3);
                 final boolean damageable = stack.isDamageableItem();
                 final int count = stack.getCount();
                 stack.getItem().useOn(new ProxyItemUseContext(player, stack, new BlockHitResult(Vec3.ZERO, Direction.UP, blockPos, false)));
@@ -148,9 +152,9 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(PLOWING, false);
+        this.entityData.set(PLOWING, false);
         for (final EntityDataAccessor<ItemStack> param : TOOLS) {
-            this.entityData.define(param, ItemStack.EMPTY);
+            this.entityData.set(param, ItemStack.EMPTY);
         }
     }
 
@@ -173,10 +177,19 @@ public final class PlowEntity extends AbstractDrawnInventoryEntity {
 
     private void openContainer(final Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
-            NetworkHooks.openScreen(serverPlayer,
-                new SimpleMenuProvider((windowId, playerInventory, p) -> new PlowContainer(windowId, playerInventory, this), this.getDisplayName()),
-                buf -> buf.writeInt(this.getId())
+            serverPlayer.openMenu(new SimpleMenuProvider((windowId, playerInventory, p) -> new PlowContainer(windowId, playerInventory, this), this.getDisplayName()),
+                    buf -> buf.writeInt(this.getId())
             );
         }
+    }
+
+    @Override
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
+
+    }
+
+    @Override
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
+
     }
 }

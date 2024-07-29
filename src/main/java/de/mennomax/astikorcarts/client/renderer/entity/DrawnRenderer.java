@@ -14,12 +14,15 @@ import net.minecraft.client.renderer.blockentity.BannerRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.BannerPattern;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -92,7 +95,7 @@ public abstract class DrawnRenderer<T extends AbstractDrawnEntity, M extends Ent
         this.flag.y = -26.0F;
         this.flag.z = 1.5F;
         this.flag.xRot = 0.0F;
-        BannerRenderer.renderPatterns(stack, source, packedLight, OverlayTexture.NO_OVERLAY, this.flag, ModelBakery.BANNER_BASE, true, banner);
+        BannerRenderer.renderPatterns(stack, source, packedLight, OverlayTexture.NO_OVERLAY, ModelBakery.BANNER_BASE, ///, true);
         stack.popPose();
     }
 

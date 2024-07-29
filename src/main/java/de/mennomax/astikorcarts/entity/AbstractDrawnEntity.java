@@ -52,11 +52,9 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -64,7 +62,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public abstract class AbstractDrawnEntity extends Entity implements IEntityAdditionalSpawnData {
+public abstract class AbstractDrawnEntity extends Entity implements IEntityWithComplexSpawn {
     private static final EntityDataAccessor<Integer> TIME_SINCE_HIT = SynchedEntityData.defineId(AbstractDrawnEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> FORWARD_DIRECTION = SynchedEntityData.defineId(AbstractDrawnEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Float> DAMAGE_TAKEN = SynchedEntityData.defineId(AbstractDrawnEntity.class, EntityDataSerializers.FLOAT);
@@ -86,9 +84,13 @@ public abstract class AbstractDrawnEntity extends Entity implements IEntityAddit
 
     public AbstractDrawnEntity(final EntityType<? extends Entity> entityTypeIn, final Level worldIn) {
         super(entityTypeIn, worldIn);
-        this.setMaxUpStep(1.2F);
         this.blocksBuilding = true;
         this.initWheels();
+    }
+
+    @Override
+    public float maxUpStep() {
+        return 1.2F;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -247,7 +249,7 @@ public abstract class AbstractDrawnEntity extends Entity implements IEntityAddit
                                 PULL_MODIFIER_UUID,
                                 "Pull modifier",
                                 this.getConfig().pullSpeed.get(),
-                                AttributeModifier.Operation.MULTIPLY_TOTAL
+                                AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
                             ));
                         }
                     }
@@ -513,14 +515,13 @@ public abstract class AbstractDrawnEntity extends Entity implements IEntityAddit
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void lerpTo(final double x, final double y, final double z, final float yaw, final float pitch, final int posRotationIncrements, final boolean teleport) {
-        this.lerpX = x;
-        this.lerpY = y;
-        this.lerpZ = z;
-        this.lerpYaw = yaw;
-        this.lerpPitch = pitch;
-        this.lerpSteps = posRotationIncrements;
+    public void lerpTo(double pX, double pY, double pZ, float pYRot, float pXRot, int pSteps) {
+        this.lerpX = pX;
+        this.lerpY = pY;
+        this.lerpZ = pZ;
+        this.lerpYaw = pYRot;
+        this.lerpPitch = pXRot;
+        this.lerpSteps = pSteps;
     }
 
     @Override

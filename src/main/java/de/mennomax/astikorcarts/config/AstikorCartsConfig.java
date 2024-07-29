@@ -1,19 +1,16 @@
 package de.mennomax.astikorcarts.config;
 
 import net.jodah.typetools.TypeResolver;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ItemSteerable;
 import net.minecraft.world.entity.Saddleable;
 import net.minecraft.world.entity.animal.horse.Llama;
-import net.minecraftforge.common.ModConfigSpec;
-import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -45,38 +42,44 @@ public final class AstikorCartsConfig {
         public final CartConfig supplyCart;
         public final CartConfig animalCart;
         public final CartConfig plow;
+        public final ModConfigSpec.BooleanValue lightningInvulnerable;
+
 
         Common(final ModConfigSpec.Builder builder) {
             builder.comment("Configuration for all carts and cart-like vehicles, check log for automatic \"pull_animals\" list.").push("carts");
+            this.lightningInvulnerable = builder
+                    .comment("Enable carts being invulnerable to lightning (If false when struck, all items will disappear and mobs escape!)")
+                    .define("lightningInvulnerable", true);
             this.supplyCart = new CartConfig(builder, "supply_cart", "The Supply Cart, a type of cart that stores items");
             this.animalCart = new CartConfig(builder, "animal_cart", "The Animal Cart, a type of cart to haul other animals");
-            this.plow = new CartConfig(builder, "plow", "The Plow, an animal pulled machine for tilling soil and creating paths");
+            this.plow = new CartConfig(builder, "plow", "The Plow, n animal pulled machine for tilling soil and creating paths");
             builder.pop();
         }
 
         public static String getComment() {
-            return "pull_animals = " + referencePullAnimals();
+            //return "pull_animals = " + referencePullAnimals();
+            return "test";
         }
 
-        static String referencePullAnimals() {
-            return "[\n" +
-                StreamSupport.stream(BuiltInRegistries.ENTITY_TYPE.spliterator(), false)
-                    .filter(type -> {
-                        final Class<?> entityClass = TypeResolver.resolveRawArgument(EntityType.EntityFactory.class, Objects.requireNonNull(
-                            ObfuscationReflectionHelper.getPrivateValue(EntityType.class, type, "f_20535_"),
-                            "factory"
-                        ).getClass());
-                        if (Entity.class.equals(entityClass)) return type == EntityType.PLAYER;
-                        return Saddleable.class.isAssignableFrom(entityClass) &&
-                            !ItemSteerable.class.isAssignableFrom(entityClass) &&
-                            !Llama.class.isAssignableFrom(entityClass); // no horse-llamas
-                    })
-                    .map(BuiltInRegistries.ENTITY_TYPES::getKey)
-                    .filter(Objects::nonNull)
-                    .map(type -> "    \"" + type + "\"")
-                    .collect(Collectors.joining(",\n")) +
-                "\n  ]";
-        }
+//        static String referencePullAnimals() {
+//            return "[\n" +
+//                    StreamSupport.stream(Registries.ENTITY_TYPE.spliterator(), false)
+//                            .filter(type -> {
+//                                final Class<?> entityClass = TypeResolver.resolveRawArgument(EntityType.EntityFactory.class, Objects.requireNonNull(
+//                                        ObfuscationReflectionHelper.getPrivateValue(EntityType.class, type, "f_20535_"),
+//                                        "factory"
+//                                ).getClass());
+//                                if (Entity.class.equals(entityClass)) return type == EntityType.PLAYER;
+//                                return Saddleable.class.isAssignableFrom(entityClass) &&
+//                                        !ItemSteerable.class.isAssignableFrom(entityClass) &&
+//                                        !Llama.class.isAssignableFrom(entityClass); // no horse-llamas
+//                            })
+//                            .map(NeoForgeRegistries.ENTITY_TYPES::getKey)
+//                            .filter(Objects::nonNull)
+//                            .map(type -> "    \"" + type + "\"")
+//                            .collect(Collectors.joining(",\n")) +
+//                    "\n  ]";
+//        }
     }
 
     public static class CartConfig {
@@ -87,15 +90,15 @@ public final class AstikorCartsConfig {
         CartConfig(final ModConfigSpec.Builder builder, final String name, final String description) {
             builder.comment(description).push(name);
             this.pullAnimals = builder
-                .comment(
-                    "Animals that are able to pull this cart, such as [\"minecraft:horse\"]\n" +
-                    "An empty list defaults to all which may wear a saddle but not steered by an item"
-                )
-                .define("pull_animals", new ArrayList<>());
+                    .comment(
+                            "Animals that are able to pull this cart, such as [\"minecraft:horse\"]\n" +
+                                    "An empty list defaults to all which may wear a saddle but not steered by an item"
+                    )
+                    .define("pull_animals", new ArrayList<>());
             this.slowSpeed = builder.comment("Slow speed modifier toggled by the sprint key")
-                .defineInRange("slow_speed", -0.65D, -1.0D, 0.0D);
+                    .defineInRange("slow_speed", -0.65D, -1.0D, 0.0D);
             this.pullSpeed = builder.comment("Base speed modifier applied to animals (-0.5 = half normal speed)")
-                .defineInRange("pull_speed", 0.0D, -1.0D, 0.0D);
+                    .defineInRange("pull_speed", 0.0D, -1.0D, 0.0D);
             builder.pop();
         }
     }

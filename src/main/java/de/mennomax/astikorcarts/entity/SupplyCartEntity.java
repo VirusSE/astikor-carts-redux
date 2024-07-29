@@ -16,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -34,10 +35,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.ItemStackHandler;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -70,7 +67,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity impleme
     }
 
     @Override
-    protected CartItemStackHandler<PlowEntity> initInventory() {
+    protected CartItemStackHandler<SupplyCartEntity> initInventory() {
         return new CartItemStackHandler<SupplyCartEntity>(54, this) {
             @Override
             protected void onLoad() {
@@ -209,7 +206,7 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity impleme
             final Vec3 forward = this.getLookAngle();
             final Vec3 origin = new Vec3(0.0D, this.getPassengersRidingOffset(), 1.0D / 16.0D);
             final Vec3 pos = origin.add(forward.scale(-0.68D));
-            passenger.setPos(this.getX() + pos.x, this.getY() + pos.y - 0.1D + passenger.getMyRidingOffset(), this.getZ() + pos.z);
+            passenger.setPos(this.getX() + pos.x, this.getY() + pos.y - 0.1D + getPassengersRidingOffset(), this.getZ() + pos.z);
             passenger.setYBodyRot(this.getYRot() + 180.0F);
             final float f2 = Mth.wrapDegrees(passenger.getYRot() - this.getYRot() + 180.0F);
             final float f1 = Mth.clamp(f2, -105.0F, 105.0F);
@@ -297,6 +294,16 @@ public final class SupplyCartEntity extends AbstractDrawnInventoryEntity impleme
         for(int i =0; i < this.inventory.getSlots(); i++){
             removeItemNoUpdate(i);
         }
+    }
+
+    @Override
+    public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
+
+    }
+
+    @Override
+    public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
+
     }
 
 
