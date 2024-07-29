@@ -22,6 +22,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.block.entity.BannerPattern;
+import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 
 import java.lang.reflect.Field;
@@ -78,7 +79,7 @@ public abstract class DrawnRenderer<T extends AbstractDrawnEntity, M extends Ent
         stack.scale(-1.0F, -1.0F, 1.0F);
     }
 
-    protected void renderBanner(final PoseStack stack, final MultiBufferSource source, final int packedLight, final List<Pair<Holder<BannerPattern>, DyeColor>> banner) {
+    protected void renderBanner(final PoseStack stack, final MultiBufferSource source, final int packedLight, BannerPatternLayers bannerPatternLayers, DyeColor baseColour) {
         stack.pushPose();
         stack.mulPose(Axis.YP.rotationDegrees(90.0F));
         final float scale = 2.0F / 3.0F;
@@ -95,7 +96,8 @@ public abstract class DrawnRenderer<T extends AbstractDrawnEntity, M extends Ent
         this.flag.y = -26.0F;
         this.flag.z = 1.5F;
         this.flag.xRot = 0.0F;
-        BannerRenderer.renderPatterns(stack, source, packedLight, OverlayTexture.NO_OVERLAY, ModelBakery.BANNER_BASE, ///, true);
+        Material flagMaterial = ModelBakery.BANNER_BASE;
+        BannerRenderer.renderPatterns(stack, source, packedLight, OverlayTexture.NO_OVERLAY, this.flag, flagMaterial, true, baseColour, bannerPatternLayers);
         stack.popPose();
     }
 
