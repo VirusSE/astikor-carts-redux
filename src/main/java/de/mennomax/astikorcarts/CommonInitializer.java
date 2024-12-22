@@ -30,7 +30,7 @@ public class CommonInitializer implements Initializer {
             e.put(AstikorCarts.EntityTypes.POSTILION.get(), LivingEntity.createLivingAttributes().build());
         });
         mod.bus().<AttachCapabilitiesEvent<Level>, Level>addGenericListener(Level.class, e ->
-            e.addCapability(new ResourceLocation(AstikorCarts.ID, "astikor"), AstikorWorld.createProvider(SimpleAstikorWorld::new))
+            e.addCapability(ResourceLocation.fromNamespaceAndPath(AstikorCarts.ID, "astikor"), AstikorWorld.createProvider(SimpleAstikorWorld::new))
         );
         GoalAdder.mobGoal(Mob.class)
             .add(1, PullCartGoal::new)

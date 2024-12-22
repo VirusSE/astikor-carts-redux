@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
 public final class PlowScreen extends AbstractContainerScreen<CartContainer> {
-    private static final ResourceLocation PLOW_GUI_BG = new ResourceLocation(AstikorCarts.ID, "textures/gui/plow.png");
+    private static final ResourceLocation PLOW_GUI_BG = ResourceLocation.fromNamespaceAndPath(AstikorCarts.ID, "textures/gui/plow.png");
 
     public PlowScreen(final CartContainer screenContainer, final Inventory inv, final Component titleIn) {
         super(screenContainer, inv, titleIn);

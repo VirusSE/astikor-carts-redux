@@ -46,7 +46,7 @@ public final class AstikorCarts {
     public static final Logger LOGGER = LoggerFactory.getLogger(AstikorCarts.class);
 
     public static ResourceLocation prefix(String name) {
-        return new ResourceLocation(ID, name.toLowerCase(Locale.ROOT));
+        return ResourceLocation.fromNamespaceAndPath(ID, name.toLowerCase(Locale.ROOT));
     }
 
     @SubscribeEvent
@@ -56,7 +56,7 @@ public final class AstikorCarts {
                 .optional();
     }
 
-    public static final SimpleChannel CHANNEL = new NetBuilder(new ResourceLocation(ID, "main"))
+    public static final SimpleChannel CHANNEL = new NetBuilder(ResourceLocation.fromNamespaceAndPath(ID, "main"))
             .version(1).optionalServer().requiredClient()
             .serverbound(ActionKeyMessage::new).consumer(() -> ActionKeyMessage::handle)
             .serverbound(ToggleSlowMessage::new).consumer(() -> ToggleSlowMessage::handle)
@@ -70,7 +70,7 @@ public final class AstikorCarts {
         public static final DeferredRegister<ResourceLocation> AC_STATS = DeferredRegister.create(Registries.CUSTOM_STAT, ID);
         public static final Supplier<ResourceLocation> CART_ONE_CM = AC_STATS.register("cart_one_cm", () -> makeStat("cart_one_cm"));
         private static ResourceLocation makeStat(String key) {
-            return new ResourceLocation(ID, key);
+            return ResourceLocation.fromNamespaceAndPath(ID, key);
         }
         public static void initStats() {
             Stats.CUSTOM.get(CART_ONE_CM.get(), StatFormatter.DISTANCE);
@@ -138,7 +138,7 @@ public final class AstikorCarts {
         public static final Supplier<SoundEvent> CART_PLACED = registerSoundEvent("entity.cart.place");
 
         private static Supplier<SoundEvent> registerSoundEvent(String name) {
-            ResourceLocation id = new ResourceLocation(ID, name);
+            ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ID, name);
             return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(id));
         }
     }

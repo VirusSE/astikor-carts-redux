@@ -15,6 +15,6 @@ public class AstikorCartsModelLayers {
     }
 
     private static ModelLayerLocation layer(String name, String layer) {
-        return new ModelLayerLocation(new ResourceLocation(AstikorCarts.ID, name), layer);
+        return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(AstikorCarts.ID, name), layer);
     }
 }

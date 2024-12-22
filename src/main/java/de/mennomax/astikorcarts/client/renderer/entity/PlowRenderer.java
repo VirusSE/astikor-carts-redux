@@ -19,7 +19,7 @@ import net.minecraft.world.item.ItemStack;
 import javax.annotation.Nullable;
 
 public final class PlowRenderer extends DrawnRenderer<PlowEntity, PlowModel> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(AstikorCarts.ID, "textures/entity/plow.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(AstikorCarts.ID, "textures/entity/plow.png");
 
     public PlowRenderer(final EntityRendererProvider.Context renderManager) {
         super(renderManager, new PlowModel(renderManager.bakeLayer(AstikorCartsModelLayers.PLOW)));
