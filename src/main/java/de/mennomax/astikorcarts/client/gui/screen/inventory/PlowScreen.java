@@ -22,7 +22,7 @@ public final class PlowScreen extends AbstractContainerScreen<CartContainer> {
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(guiGraphics);
+        renderBackground(guiGraphics, mouseX, mouseY, partialTicks);
         guiGraphics.blit(PLOW_GUI_BG, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
 
