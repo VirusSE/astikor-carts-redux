@@ -6,7 +6,6 @@ import de.mennomax.astikorcarts.entity.PostilionEntity;
 import de.mennomax.astikorcarts.entity.SupplyCartEntity;
 import de.mennomax.astikorcarts.inventory.container.PlowContainer;
 import de.mennomax.astikorcarts.item.CartItem;
-import de.mennomax.astikorcarts.network.NetBuilder;
 import de.mennomax.astikorcarts.network.clientbound.UpdateDrawnMessage;
 import de.mennomax.astikorcarts.network.serverbound.ActionKeyMessage;
 import de.mennomax.astikorcarts.network.serverbound.OpenSupplyCartMessage;
@@ -26,6 +25,7 @@ import net.minecraft.world.level.ItemLike;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
@@ -41,8 +41,8 @@ import java.util.function.Supplier;
 
 @Mod(AstikorCarts.ID)
 public final class AstikorCarts {
-    public static final String ID = "astikorcarts";
 
+    public static final String ID = "astikorcarts";
     public static final Logger LOGGER = LoggerFactory.getLogger(AstikorCarts.class);
 
     public static ResourceLocation prefix(String name) {
@@ -56,13 +56,30 @@ public final class AstikorCarts {
                 .optional();
     }
 
-    public static final SimpleChannel CHANNEL = new NetBuilder(ResourceLocation.fromNamespaceAndPath(ID, "main"))
+
+    @SubscribeEvent
+    public static void onNetworkRegistry(final RegisterPayloadHandlersEvent event)  {
+        final String modVersion = ModList.get().getModContainerById(ID).get().getModInfo().getVersion().toString();
+        final PayloadRegistrar registry = event.registrar(ID).versioned(modVersion);
+
+        //Client messages
+        UpdateDrawnMessage.TYPE.register(registry);
+
+        //Server messages
+        ActionKeyMessage.TYPE.register(registry);
+        ToggleSlowMessage.TYPE.register(registry);
+        OpenSupplyCartMessage.TYPE.register(registry);
+
+    }
+
+    /*@Deprecated
+    public static final SimpleChannel CHANNEL = new NetBuilderOld(ResourceLocation.fromNamespaceAndPath(ID, "main"))
             .version(1).optionalServer().requiredClient()
             .serverbound(ActionKeyMessage::new).consumer(() -> ActionKeyMessage::handle)
             .serverbound(ToggleSlowMessage::new).consumer(() -> ToggleSlowMessage::handle)
-            .clientbound(UpdateDrawnMessage::new).consumer(() -> new UpdateDrawnMessage.Handler())
+            .clientbound(UpdateDrawnMessageOld::new).consumer(() -> new UpdateDrawnMessageOld.Handler())
             .serverbound(OpenSupplyCartMessage::new).consumer(() -> OpenSupplyCartMessage::handle)
-            .build();
+            .build();*/
 
 
     public class ACStats {
@@ -153,6 +170,7 @@ public final class AstikorCarts {
 
 
     }
+
     public AstikorCarts(IEventBus bus) {
         bus.addListener(EventPriority.NORMAL, this::setup);
         Items.R.register(bus);
@@ -163,6 +181,7 @@ public final class AstikorCarts {
 
         bus.addListener(this::addCreative);
     }
+
     private void setup(final FMLCommonSetupEvent event) {
         event.enqueueWork(ACStats::initStats);
     }
