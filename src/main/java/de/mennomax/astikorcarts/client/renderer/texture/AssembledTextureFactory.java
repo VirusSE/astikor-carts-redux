@@ -8,8 +8,8 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.bus.api.IEventBus;
 
 public class AssembledTextureFactory {
     private final Object2ObjectMap<ResourceLocation, AssembledTexture> textures = new Object2ObjectOpenHashMap<>();
