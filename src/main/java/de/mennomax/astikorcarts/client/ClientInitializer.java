@@ -37,19 +37,17 @@ public final class ClientInitializer extends CommonInitializer {
     @Override
     public void init(final Context mod) {
         super.init(mod);
-        mod.bus().<ClientTickEvent>addListener(e -> {
-            if (e.phase == TickEvent.Phase.END) {
+        mod.bus().<ClientTickEvent.Post>addListener(e -> {
                 final Minecraft mc = Minecraft.getInstance();
                 final Level world = mc.level;
                 if (world != null) {
                     while (this.action.consumeClick()) {
-                        AstikorCarts.CHANNEL.sendToServer(new ActionKeyMessage());
+                        new ActionKeyMessage();
                     }
                     if (!mc.isPaused()) {
                         AstikorWorld.get(world).ifPresent(AstikorWorld::tick);
                     }
                 }
-            }
         });
         mod.bus().<InputEvent.Key>addListener(e -> {
             final Minecraft mc = Minecraft.getInstance();
@@ -58,7 +56,7 @@ public final class ClientInitializer extends CommonInitializer {
                 if (ToggleSlowMessage.getCart(player).isPresent()) {
                     final KeyMapping binding = mc.options.keySprint;
                     while (binding.consumeClick()) {
-                        AstikorCarts.CHANNEL.sendToServer(new ToggleSlowMessage());
+                        new ToggleSlowMessage();
                         KeyMapping.set(binding.getKey(), false);
                     }
                 }
@@ -69,12 +67,12 @@ public final class ClientInitializer extends CommonInitializer {
                 final LocalPlayer player = Minecraft.getInstance().player;
                 if (player != null && player.getVehicle() instanceof SupplyCartEntity) {
                     e.setCanceled(true);
-                    AstikorCarts.CHANNEL.sendToServer(new OpenSupplyCartMessage());
+                    new OpenSupplyCartMessage();
                 }
             }
         });
-        mod.modBus().<FMLClientSetupEvent>addListener(e -> {
-            MenuScreens.register(AstikorCarts.ContainerTypes.PLOW_CART.get(), PlowScreen::new);
+        mod.modBus().<RegisterMenuScreensEvent>addListener(e -> {
+            e.register(AstikorCarts.ContainerTypes.PLOW_CART.get(), PlowScreen::new);
         });
         mod.modBus().<RegisterKeyMappingsEvent>addListener(e -> {
             e.register(this.action);
@@ -90,6 +88,7 @@ public final class ClientInitializer extends CommonInitializer {
             e.registerLayerDefinition(AstikorCartsModelLayers.ANIMAL_CART, AnimalCartModel::createLayer);
             e.registerLayerDefinition(AstikorCartsModelLayers.SUPPLY_CART, SupplyCartModel::createLayer);
         });
+
         new AssembledTextureFactory()
             .add(ResourceLocation.fromNamespaceAndPath(AstikorCarts.ID, "textures/entity/animal_cart.png"), new AssembledTexture(64, 64)
                 .add(new Material(ResourceLocation.parse("block/oak_planks"), 16)
